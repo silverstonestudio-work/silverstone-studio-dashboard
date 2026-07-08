@@ -36,6 +36,10 @@ export interface ProjectSettings {
   wordWipe: boolean;
   /** Pixels-per-second baseline zoom for the timeline. */
   timelineZoom: number;
+  /** Record mixer: microphone (voice) level, 0..1.5. */
+  micGain: number;
+  /** Record mixer: backing-track level, 0..1.5. */
+  trackGain: number;
 }
 
 export interface KaraokeProject {
@@ -75,4 +79,6 @@ export const DEFAULT_SETTINGS: ProjectSettings = {
   leadInSeconds: 4,
   wordWipe: true,
   timelineZoom: 12,
+  micGain: 1,
+  trackGain: 1,
 };

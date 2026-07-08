@@ -7,6 +7,7 @@ import {
   Headphones,
   Loader2,
   Mic,
+  Music,
   Pause,
   Play,
   RotateCcw,
@@ -27,12 +28,47 @@ export function RecordStudio() {
   const pause = useStore((s) => s.pause);
   const seek = useStore((s) => s.seek);
   const setCurrentTime = useStore((s) => s.setCurrentTime);
+  const updateSettings = useStore((s) => s.updateSettings);
 
   const recorderRef = useRef<KaraokeRecorder | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [elapsed, setElapsed] = useState(0);
   const [take, setTake] = useState<Take | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Mixer levels — seeded from the project, adjustable live, persisted (debounced).
+  const [micGain, setMicGainState] = useState(
+    () => useStore.getState().project?.settings.micGain ?? 1
+  );
+  const [trackGain, setTrackGainState] = useState(
+    () => useStore.getState().project?.settings.trackGain ?? 1
+  );
+  const persistRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRef = useRef<{ micGain?: number; trackGain?: number }>({});
+
+  const persistGains = useCallback(
+    (patch: { micGain?: number; trackGain?: number }) => {
+      // Accumulate so debouncing across both faders doesn't drop a patch.
+      pendingRef.current = { ...pendingRef.current, ...patch };
+      if (persistRef.current) clearTimeout(persistRef.current);
+      persistRef.current = setTimeout(() => {
+        updateSettings(pendingRef.current);
+        pendingRef.current = {};
+      }, 350);
+    },
+    [updateSettings]
+  );
+
+  const changeMic = (v: number) => {
+    setMicGainState(v);
+    recorderRef.current?.setMicGain(v);
+    persistGains({ micGain: v });
+  };
+  const changeTrack = (v: number) => {
+    setTrackGainState(v);
+    recorderRef.current?.setTrackGain(v);
+    persistGains({ trackGain: v });
+  };
 
   useEffect(() => {
     return () => {
@@ -74,6 +110,8 @@ export function RecordStudio() {
       recorderRef.current = rec;
       await rec.start(buffer, {
         startAt: 0,
+        micGain,
+        trackGain,
         onTick: (t) => {
           setElapsed(t);
           setCurrentTime(t);
@@ -93,7 +131,7 @@ export function RecordStudio() {
       setPhase("idle");
       recorderRef.current = null;
     }
-  }, [audioUrl, take, pause, setCurrentTime, finish]);
+  }, [audioUrl, take, pause, setCurrentTime, finish, micGain, trackGain]);
 
   const discard = () => {
     if (take) URL.revokeObjectURL(take.url);
@@ -124,6 +162,14 @@ export function RecordStudio() {
           <Headphones className="h-3.5 w-3.5 shrink-0 text-[var(--color-accent)]" />
           Use headphones — your mic is mixed with the track into a single MP3.
         </div>
+
+        {/* mixer — voice + music levels (live, saved with the project) */}
+        {(phase === "idle" || phase === "recording") && (
+          <div className="mb-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-[var(--color-line)] pb-4">
+            <Level icon={<Mic className="h-3.5 w-3.5" />} label="Your voice" value={micGain} onChange={changeMic} />
+            <Level icon={<Music className="h-3.5 w-3.5" />} label="Music" value={trackGain} onChange={changeTrack} />
+          </div>
+        )}
 
         <div className="flex min-h-[52px] items-center justify-center">
           {phase === "idle" && (
@@ -196,6 +242,41 @@ export function RecordStudio() {
           </p>
         )}
       </section>
+    </div>
+  );
+}
+
+/** One labelled level fader for the record mixer. */
+function Level({
+  icon,
+  label,
+  value,
+  onChange,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="flex w-[92px] shrink-0 items-center gap-1.5 text-xs font-medium text-[var(--color-ink-muted)]">
+        <span className="text-[var(--color-accent)]">{icon}</span>
+        {label}
+      </span>
+      <input
+        type="range"
+        min={0}
+        max={1.5}
+        step={0.05}
+        value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        aria-label={`${label} level`}
+        className="h-1.5 w-36 cursor-pointer appearance-none rounded-full bg-[var(--color-line-strong)] accent-[var(--color-accent)]"
+      />
+      <span className="w-10 text-right font-mono text-xs tabular-nums text-[var(--color-ink-subtle)]">
+        {Math.round(value * 100)}%
+      </span>
     </div>
   );
 }

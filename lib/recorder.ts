@@ -47,18 +47,33 @@ interface StartOpts {
   startAt?: number;
   onTick?: (t: number) => void;
   onComplete?: () => void;
+  /** Initial mixer levels (0..1.5). */
+  micGain?: number;
+  trackGain?: number;
 }
 
 export class KaraokeRecorder {
   private mic?: MediaStream;
   private nodes: AudioNode[] = [];
   private trackSource?: AudioBufferSourceNode;
+  private micGainNode?: GainNode;
+  private trackGainNode?: GainNode;
   private chunks: Float32Array[] = [];
   private length = 0;
   private sampleRate = 44100;
   private raf = 0;
   private t0 = 0;
   recording = false;
+
+  /** Live-adjust the microphone (voice) level while recording or before it. */
+  setMicGain(v: number): void {
+    if (this.micGainNode) this.micGainNode.gain.value = v;
+  }
+
+  /** Live-adjust the backing-track level (affects both monitor + recording). */
+  setTrackGain(v: number): void {
+    if (this.trackGainNode) this.trackGainNode.gain.value = v;
+  }
 
   async start(buffer: AudioBuffer, opts: StartOpts = {}): Promise<void> {
     const c = getCtx();
@@ -77,12 +92,21 @@ export class KaraokeRecorder {
     const trackSource = c.createBufferSource();
     trackSource.buffer = buffer;
 
-    // mix mic + track for capture
+    // per-source level controls (the "mixer")
+    const micGainNode = c.createGain();
+    micGainNode.gain.value = opts.micGain ?? 1;
+    const trackGainNode = c.createGain();
+    trackGainNode.gain.value = opts.trackGain ?? 1;
+    this.micGainNode = micGainNode;
+    this.trackGainNode = trackGainNode;
+
+    // mix mic + track (post-gain) for capture
     const mix = c.createGain();
-    micSource.connect(mix);
-    trackSource.connect(mix);
-    // only the track is monitored on the speakers (avoids mic echo)
-    trackSource.connect(c.destination);
+    micSource.connect(micGainNode).connect(mix);
+    trackSource.connect(trackGainNode).connect(mix);
+    // only the track is monitored on the speakers (avoids mic echo),
+    // at the same level it's recorded
+    trackGainNode.connect(c.destination);
 
     // capture the mix as mono PCM
     const processor = c.createScriptProcessor(4096, 2, 1);
@@ -106,7 +130,7 @@ export class KaraokeRecorder {
     silent.connect(c.destination);
 
     this.trackSource = trackSource;
-    this.nodes = [micSource, mix, processor, silent];
+    this.nodes = [micSource, micGainNode, trackGainNode, mix, processor, silent];
 
     const startAt = Math.max(0, opts.startAt ?? 0);
     this.t0 = c.currentTime - startAt;

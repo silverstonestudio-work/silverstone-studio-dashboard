@@ -31,7 +31,8 @@ Built with **Next.js 15 (App Router)**, **TypeScript**, **Tailwind CSS v4**, **Z
 
 ### Record your performance
 - A **Record** mode plays the backing track while showing the karaoke guide, captures your **microphone mixed with the track**, and encodes the result to an **MP3 you can play back and download** — your voice over the melody, in one file.
-- Runs entirely client-side (Web Audio + a lazily-loaded MP3 encoder); the main player's audio is never rerouted, and the mic isn't monitored on the speakers (use headphones to avoid bleed).
+- A built-in **mixer** with independent **Your voice** and **Music** level faders (0–150%) that adjust live during recording, affect both what you hear and the exported MP3, and are saved with the project.
+- Runs entirely client-side (Web Audio + a bundled MP3 encoder); the main player's audio is never rerouted, and the mic isn't monitored on the speakers (use headphones to avoid bleed).
 
 ### Export
 - Standard `.lrc` with enhanced inline word-level timestamps supported by most karaoke players.
