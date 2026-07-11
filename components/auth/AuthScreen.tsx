@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AudioLines, Loader2, Lock, Mail } from "lucide-react";
+import { Loader2, Lock, Mail } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "../ui/Button";
+import { LogoMark } from "../brand/Logo";
 
 /**
  * Sign-in only. Accounts are provisioned by the owner in Supabase
@@ -52,8 +53,8 @@ export function AuthScreen() {
         className="w-full max-w-sm"
       >
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[var(--radius-md)] bg-[var(--color-surface-2)] ring-1 ring-[var(--color-line)]">
-            <AudioLines className="h-6 w-6 text-[var(--color-accent)]" strokeWidth={1.75} />
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--color-surface-2)] ring-1 ring-[var(--color-line)]">
+            <LogoMark className="h-8 w-8" />
           </div>
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">
             Sign in
