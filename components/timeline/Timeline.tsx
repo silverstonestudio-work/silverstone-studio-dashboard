@@ -292,7 +292,7 @@ export function Timeline() {
               className="pointer-events-none absolute top-0 z-20 w-px bg-white"
               style={{ left: playheadX, height: RULER_H + FLAG_LANE_H + lanesH + 8 }}
             >
-              <div className="absolute -left-[3px] -top-0.5 h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(56,189,248,0.9)]" />
+              <div className="absolute -left-[3px] -top-0.5 h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
             </div>
           </div>
         </div>

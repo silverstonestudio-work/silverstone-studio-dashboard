@@ -39,7 +39,7 @@ export function PaceGuide({ line, t }: { line: Line; t: number }) {
         ))}
         {/* moving playhead */}
         <span
-          className="absolute top-1/2 h-4 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_10px_rgba(56,189,248,0.8)]"
+          className="absolute top-1/2 h-4 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)]"
           style={{ left: `${progress * 100}%` }}
         />
       </div>

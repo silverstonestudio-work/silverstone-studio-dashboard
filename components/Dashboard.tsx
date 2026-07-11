@@ -322,7 +322,7 @@ function ProjectCard({
       <button onClick={onOpen} className="block w-full text-left" aria-label={`Open ${project.name}`}>
         {/* banner */}
         <div className="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br from-[var(--color-surface-2)] to-[var(--color-elevated)]">
-          <div className="absolute inset-0 bg-[radial-gradient(400px_120px_at_30%_0%,rgba(56,189,248,0.18),transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(400px_120px_at_30%_0%,color-mix(in_srgb,var(--color-accent)_22%,transparent),transparent_70%)]" />
           {shared && (
             <span className="absolute left-3 top-2 flex items-center gap-1 rounded-[var(--radius-xs)] bg-[color-mix(in_srgb,var(--color-accent)_18%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--color-accent)]">
               <Users className="h-3 w-3" /> Shared

@@ -46,7 +46,7 @@ export function KaraokePreview({ idleMessage }: { idleMessage?: string } = {}) {
       {/* stage glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-1/2 h-64 -translate-y-1/2 bg-[radial-gradient(600px_200px_at_50%_50%,rgba(56,189,248,0.12),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 top-1/2 h-64 -translate-y-1/2 bg-[radial-gradient(600px_200px_at_50%_50%,color-mix(in_srgb,var(--color-accent)_14%,transparent),transparent_70%)]"
       />
 
       {/* header chip */}
@@ -129,7 +129,7 @@ function ActiveLine({ line, t, wordWipe }: { line: Line; t: number; wordWipe: bo
             key={word.id}
             className={cn(
               singing ? "karaoke-wipe" : sung ? "text-[var(--color-accent)]" : "text-[var(--color-ink-subtle)]",
-              singing && "drop-shadow-[0_0_20px_rgba(56,189,248,0.35)]"
+              singing && "drop-shadow-[0_0_20px_color-mix(in_srgb,var(--color-accent)_35%,transparent)]"
             )}
             style={singing ? ({ ["--wipe" as string]: `${pct}%` } as React.CSSProperties) : undefined}
           >
@@ -152,7 +152,7 @@ function Countdown({ seconds, line }: { seconds: number; line: Line | null }) {
             className={cn(
               "h-3 w-3 rounded-full transition-all duration-200",
               n >= count && count <= 3
-                ? "scale-110 bg-[var(--color-accent)] shadow-[0_0_12px_rgba(56,189,248,0.6)]"
+                ? "scale-110 bg-[var(--color-accent)] shadow-[0_0_12px_color-mix(in_srgb,var(--color-accent)_60%,transparent)]"
                 : "bg-[var(--color-line-strong)]"
             )}
           />

@@ -48,7 +48,7 @@ function LineRowInner({ line, index, isActive, isSelected, isSyncTarget }: LineR
     >
       <div className="flex w-6 shrink-0 items-center justify-center">
         {isActive ? (
-          <span className="h-2 w-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_8px_rgba(56,189,248,0.7)]" />
+          <span className="h-2 w-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_8px_color-mix(in_srgb,var(--color-accent)_70%,transparent)]" />
         ) : (
           <span className="font-mono text-xs tabular-nums text-[var(--color-ink-subtle)]">
             {index + 1}

@@ -5,12 +5,14 @@ import { useStore } from "@/lib/store";
 import { effectiveStart } from "@/lib/model";
 import { clamp } from "@/lib/time";
 
+// Grayscale to match the monochrome brand theme (canvas scale). Canvas fills
+// can't read CSS tokens, so these mirror the theme's neutral values.
 const COLORS = {
-  played: "#38bdf8",
-  unplayed: "#334255",
-  center: "#1e2a3a",
-  marker: "#0ea5e9",
-  cursor: "#eef4fb",
+  played: "#eeeeee",
+  unplayed: "#484848",
+  center: "#3a3a3a",
+  marker: "#7a7a7a",
+  cursor: "#ffffff",
 };
 
 export function Waveform() {
