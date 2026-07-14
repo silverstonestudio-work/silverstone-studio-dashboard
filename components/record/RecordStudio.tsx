@@ -409,7 +409,7 @@ export function RecordStudio() {
 
         {/* mixer */}
         {phase !== "preparing" && (
-          <div className="mb-2 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          <div className="mx-auto mb-2 flex w-full max-w-md flex-col gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-8 sm:gap-y-3">
             <Level icon={<Mic className="h-3.5 w-3.5" />} label="Your voice" value={micGain} onChange={changeMic} />
             <Level icon={<Music className="h-3.5 w-3.5" />} label="Music" value={trackGain} onChange={changeTrack} />
           </div>
@@ -714,7 +714,7 @@ function Level({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex w-full items-center gap-3 sm:w-auto">
       <span className="flex w-[92px] shrink-0 items-center gap-1.5 text-xs font-medium text-[var(--color-ink-muted)]">
         <span className="text-[var(--color-accent)]">{icon}</span>
         {label}
@@ -727,9 +727,9 @@ function Level({
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         aria-label={`${label} level`}
-        className="h-1.5 w-36 cursor-pointer appearance-none rounded-full bg-[var(--color-line-strong)] accent-[var(--color-accent)]"
+        className="h-2 min-w-0 flex-1 cursor-pointer appearance-none rounded-full bg-[var(--color-line-strong)] accent-[var(--color-accent)] sm:h-1.5 sm:w-36 sm:flex-none"
       />
-      <span className="w-10 text-right font-mono text-xs tabular-nums text-[var(--color-ink-subtle)]">
+      <span className="w-10 shrink-0 text-right font-mono text-xs tabular-nums text-[var(--color-ink-subtle)]">
         {Math.round(value * 100)}%
       </span>
     </div>

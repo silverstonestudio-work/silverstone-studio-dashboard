@@ -129,7 +129,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="mx-auto min-h-dvh w-full max-w-6xl px-8 py-10">
+    <div className="mx-auto min-h-dvh w-full max-w-6xl px-4 py-8 sm:px-8 sm:py-10">
       {/* tool header */}
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-3">
@@ -143,11 +143,19 @@ export function Dashboard() {
             <p className="text-sm text-[var(--color-ink-subtle)]">Karaoke timing studio</p>
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Button variant="secondary" onClick={() => importRef.current?.click()}>
+        <div className="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
+          <Button
+            variant="secondary"
+            onClick={() => importRef.current?.click()}
+            className="flex-1 sm:flex-none"
+          >
             <FileUp className="h-4 w-4" /> Import
           </Button>
-          <Button variant="primary" onClick={() => setCreateOpen(true)}>
+          <Button
+            variant="primary"
+            onClick={() => setCreateOpen(true)}
+            className="flex-1 sm:flex-none"
+          >
             <Plus className="h-4 w-4" /> New project
           </Button>
         </div>
@@ -164,7 +172,7 @@ export function Dashboard() {
             className="h-10 w-full rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] pl-9 pr-3 text-sm text-[var(--color-ink)] outline-none placeholder:text-[var(--color-ink-subtle)] focus-visible:border-[var(--color-accent)]"
           />
         </div>
-        <div className="flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] p-0.5">
+        <div className="flex w-full items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] p-0.5 sm:w-auto">
           {(
             [
               ["recent", "Recent"],
@@ -176,7 +184,7 @@ export function Dashboard() {
               key={key}
               onClick={() => setSort(key)}
               className={cn(
-                "rounded-[var(--radius-xs)] px-3 py-1.5 text-xs font-medium transition-colors",
+                "flex-1 rounded-[var(--radius-xs)] px-3 py-1.5 text-xs font-medium transition-colors sm:flex-none",
                 sort === key
                   ? "bg-[var(--color-surface-2)] text-[var(--color-ink)]"
                   : "text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)]"

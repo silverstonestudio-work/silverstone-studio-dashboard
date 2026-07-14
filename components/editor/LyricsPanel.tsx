@@ -28,9 +28,9 @@ export function LyricsPanel() {
   }, [syncMode, syncLevel, cursor, lines]);
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col">
-      <header className="flex items-center justify-between px-1 pb-3">
-        <div className="flex items-baseline gap-2">
+    <section className="flex flex-col lg:min-h-0 lg:flex-1">
+      <header className="flex flex-wrap items-center justify-between gap-2 px-1 pb-3">
+        <div className="flex shrink-0 items-baseline gap-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-muted)]">
             Lyrics
           </h2>
@@ -38,7 +38,7 @@ export function LyricsPanel() {
             {lines.length} {lines.length === 1 ? "line" : "lines"}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button variant="secondary" size="sm" onClick={() => setPasteOpen(true)}>
             <ListPlus className="h-4 w-4" /> Paste lyrics
           </Button>
@@ -48,7 +48,7 @@ export function LyricsPanel() {
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-1 pb-4">
+      <div className="space-y-2 px-1 pb-4 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
         {lines.length === 0 ? (
           <EmptyLyrics onPaste={() => setPasteOpen(true)} />
         ) : (

@@ -71,15 +71,15 @@ export function TransportBar() {
         <span className="text-[var(--color-ink-subtle)]">{formatTimecode(duration)}</span>
       </div>
 
-      <div className="ml-auto flex items-center gap-4">
-        {/* Playback rate */}
-        <div className="flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] p-0.5">
+      <div className="flex w-full flex-wrap items-center gap-3 sm:ml-auto sm:w-auto sm:flex-nowrap sm:gap-4">
+        {/* Playback rate — full-width even row on mobile, natural on desktop */}
+        <div className="flex w-full items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] p-0.5 sm:w-auto">
           {RATES.map((r) => (
             <button
               key={r}
               onClick={() => setRate(r)}
               className={cn(
-                "rounded-[var(--radius-xs)] px-2 py-1 text-xs font-medium tabular-nums transition-colors",
+                "flex-1 rounded-[var(--radius-xs)] px-2 py-1 text-xs font-medium tabular-nums transition-colors sm:flex-none",
                 r === rate
                   ? "bg-[var(--color-accent)] text-[var(--color-accent-ink)]"
                   : "text-[var(--color-ink-muted)] hover:text-[var(--color-ink)]"
@@ -91,9 +91,9 @@ export function TransportBar() {
           ))}
         </div>
 
-        {/* Volume */}
-        <div className="flex items-center gap-2">
-          <Volume2 className="h-4 w-4 text-[var(--color-ink-subtle)]" />
+        {/* Volume — slider fills its own row on mobile, fixed width on desktop */}
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <Volume2 className="h-4 w-4 shrink-0 text-[var(--color-ink-subtle)]" />
           <input
             type="range"
             min={0}
@@ -102,7 +102,7 @@ export function TransportBar() {
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
             aria-label="Volume"
-            className="h-1 w-24 cursor-pointer appearance-none rounded-full bg-[var(--color-line-strong)] accent-[var(--color-accent)]"
+            className="h-1 w-full cursor-pointer appearance-none rounded-full bg-[var(--color-line-strong)] accent-[var(--color-accent)] sm:w-24"
           />
         </div>
       </div>

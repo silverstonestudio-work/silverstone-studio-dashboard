@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Flag as FlagIcon, Plus, ZoomIn, ZoomOut } from "lucide-react";
+import { Flag as FlagIcon, ZoomIn, ZoomOut } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { effectiveEnd, effectiveStart, lineText, snapTime } from "@/lib/model";
 import { formatShort } from "@/lib/time";
@@ -153,7 +153,7 @@ export function Timeline() {
 
   return (
     <section className="rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)]">
-      <div className="flex items-center gap-2 border-b border-[var(--color-line)] px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--color-line)] px-3 py-2">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-ink-muted)]">
           Timeline
         </h2>
@@ -225,7 +225,7 @@ export function Timeline() {
                   key={f.id}
                   data-flag
                   onPointerDown={(e) => startFlag(e, f.id, f.time)}
-                  className="group absolute top-0 -translate-x-1/2 cursor-ew-resize"
+                  className="group absolute top-0 -translate-x-1/2 touch-none cursor-ew-resize"
                   style={{ left: timeToX(f.time) }}
                   title={f.label || formatShort(f.time)}
                 >
@@ -256,26 +256,26 @@ export function Timeline() {
                     data-region
                     onPointerDown={(e) => startMove(e, line)}
                     className={cn(
-                      "absolute flex items-center overflow-hidden rounded-[var(--radius-xs)] border text-left transition-colors",
+                      "absolute flex touch-none items-center overflow-hidden rounded-[var(--radius-xs)] border text-left transition-colors",
                       selected
                         ? "border-[var(--color-accent)] bg-[color-mix(in_srgb,var(--color-accent)_26%,var(--color-surface-2))] z-10"
                         : "border-[var(--color-line-strong)] bg-[var(--color-surface-2)] hover:border-[var(--color-accent)]"
                     )}
                     style={{ left: x, width: Math.max(MIN_REGION_PX, w), top: row * (ROW_H + ROW_GAP), height: ROW_H, cursor: "grab" }}
                   >
-                    {/* left handle */}
+                    {/* left handle — wider + always visible on touch, hover-reveal on desktop */}
                     <span
                       onPointerDown={(e) => startResize(e, line, "start")}
-                      className="absolute left-0 top-0 h-full w-1.5 cursor-ew-resize bg-[var(--color-accent)] opacity-0 hover:opacity-100"
+                      className="absolute left-0 top-0 h-full w-3 touch-none cursor-ew-resize rounded-l-[var(--radius-xs)] bg-[var(--color-accent)] opacity-90 sm:w-1.5 sm:opacity-0 sm:hover:opacity-100"
                     />
-                    <span className="pointer-events-none truncate px-2 text-xs font-medium text-[var(--color-ink)]">
+                    <span className="pointer-events-none truncate px-3 text-xs font-medium text-[var(--color-ink)]">
                       <span className="mr-1 text-[var(--color-ink-subtle)]">{idx + 1}</span>
                       {lineText(line) || "—"}
                     </span>
-                    {/* right handle */}
+                    {/* right handle — wider + always visible on touch, hover-reveal on desktop */}
                     <span
                       onPointerDown={(e) => startResize(e, line, "end")}
-                      className="absolute right-0 top-0 h-full w-1.5 cursor-ew-resize bg-[var(--color-accent)] opacity-0 hover:opacity-100"
+                      className="absolute right-0 top-0 h-full w-3 touch-none cursor-ew-resize rounded-r-[var(--radius-xs)] bg-[var(--color-accent)] opacity-90 sm:w-1.5 sm:opacity-0 sm:hover:opacity-100"
                     />
                   </div>
                 );

@@ -5,20 +5,30 @@ import { useStore } from "@/lib/store";
 import { effectiveStart } from "@/lib/model";
 import { clamp } from "@/lib/time";
 
-// Grayscale to match the monochrome brand theme (canvas scale). Canvas fills
-// can't read CSS tokens, so these mirror the theme's neutral values.
-const COLORS = {
-  played: "#eeeeee",
-  unplayed: "#484848",
-  center: "#3a3a3a",
-  marker: "#7a7a7a",
-  cursor: "#ffffff",
+// Canvas fills can't reference CSS custom properties, so we resolve the brand
+// tokens to concrete colors at runtime (see the resolver effect below). These
+// are fallbacks that mirror the OX blue theme until the real values are read.
+interface WaveColors {
+  played: string;
+  unplayed: string;
+  center: string;
+  marker: string;
+  cursor: string;
+}
+
+const FALLBACK_COLORS: WaveColors = {
+  played: "#0091ff",
+  unplayed: "#3e3e3e",
+  center: "#343434",
+  marker: "#707070",
+  cursor: "#ededed",
 };
 
 export function Waveform() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef(false);
+  const colorsRef = useRef<WaveColors>(FALLBACK_COLORS);
 
   const peaks = useStore((s) => s.peaks);
   const duration = useStore((s) => s.duration);
@@ -46,6 +56,7 @@ export function Waveform() {
     const mid = h / 2;
     const progress = duration > 0 ? currentTime / duration : 0;
     const playedX = progress * w;
+    const COLORS = colorsRef.current;
 
     // center line
     ctx.strokeStyle = COLORS.center;
@@ -84,6 +95,30 @@ export function Waveform() {
     ctx.arc(playedX, 0, 4, 0, Math.PI * 2);
     ctx.fill();
   }, [peaks, duration, currentTime, lines]);
+
+  // Resolve brand tokens (e.g. --color-accent) to concrete colors the canvas
+  // can paint with. A hidden probe lets the browser compute the var() chain,
+  // so the waveform tracks the active theme automatically after a brand swap.
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const read = (token: string, fallback: string): string => {
+      const probe = document.createElement("span");
+      probe.style.cssText = `color:var(${token});display:none`;
+      el.appendChild(probe);
+      const value = getComputedStyle(probe).color;
+      probe.remove();
+      return value || fallback;
+    };
+    colorsRef.current = {
+      played: read("--color-accent", FALLBACK_COLORS.played),
+      unplayed: read("--color-line-strong", FALLBACK_COLORS.unplayed),
+      center: read("--color-line", FALLBACK_COLORS.center),
+      marker: read("--color-ink-subtle", FALLBACK_COLORS.marker),
+      cursor: read("--color-ink", FALLBACK_COLORS.cursor),
+    };
+    draw();
+  }, [draw]);
 
   useEffect(() => {
     draw();

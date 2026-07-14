@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -63,6 +62,20 @@ export function Header() {
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [leaveOpen, setLeaveOpen] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+
+  const saveAndLeave = async () => {
+    setLeaving(true);
+    persistProject();
+    if (cloudEnabled) await pushToCloud();
+    router.push("/tools/pace-lyrics");
+  };
+
+  const discardAndLeave = () => {
+    setLeaveOpen(false);
+    router.push("/tools/pace-lyrics");
+  };
 
   const doSave = async () => {
     persistProject();
@@ -78,16 +91,17 @@ export function Header() {
   };
 
   return (
-    <header className="flex items-center gap-4 border-b border-[var(--color-line)] bg-[var(--color-surface)]/80 px-4 py-2.5 backdrop-blur-md">
+    <header className="flex flex-wrap items-center gap-2 border-b border-[var(--color-line)] bg-[var(--color-surface)]/80 px-3 py-2.5 backdrop-blur-md lg:flex-nowrap lg:gap-4 lg:px-4">
       {/* left: back + project name */}
-      <div className="flex min-w-0 items-center gap-2">
-        <Link
-          href="/tools/pace-lyrics"
+      <div className="flex min-w-0 flex-1 items-center gap-2 lg:flex-none">
+        <button
+          onClick={() => setLeaveOpen(true)}
           title="Back to Pace Lyrics"
+          aria-label="Back to Pace Lyrics"
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-ink-muted)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)]"
         >
           <ArrowLeft className="h-4 w-4" />
-        </Link>
+        </button>
         <div className="min-w-0">
           {editingName ? (
             <input
@@ -123,23 +137,25 @@ export function Header() {
         </div>
       </div>
 
-      {/* center: view toggle */}
-      <div className="mx-auto flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-bg)] p-0.5">
-        {(["editor", "preview", "record"] as const).map((v) => (
-          <button
-            key={v}
-            onClick={() => setView(v)}
-            className={cn(
-              "rounded-[var(--radius-xs)] px-4 py-1.5 text-sm font-medium capitalize transition-colors",
-              view === v
-                ? "bg-[var(--color-surface-2)] text-[var(--color-ink)] shadow-[var(--shadow-sm)]"
-                : "text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)]"
-            )}
-            aria-pressed={view === v}
-          >
-            {v}
-          </button>
-        ))}
+      {/* center: view toggle — drops to its own centered row on mobile */}
+      <div className="order-last flex w-full justify-center lg:order-none lg:mx-auto lg:w-auto">
+        <div className="flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-bg)] p-0.5">
+          {(["editor", "preview", "record"] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className={cn(
+                "rounded-[var(--radius-xs)] px-4 py-1.5 text-sm font-medium capitalize transition-colors",
+                view === v
+                  ? "bg-[var(--color-surface-2)] text-[var(--color-ink)] shadow-[var(--shadow-sm)]"
+                  : "text-[var(--color-ink-subtle)] hover:text-[var(--color-ink)]"
+              )}
+              aria-pressed={view === v}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* right: actions */}
@@ -154,35 +170,49 @@ export function Header() {
             size="sm"
             onClick={() => setShareOpen(true)}
             title="Share with a collaborator"
+            className="h-9 w-9 px-0 sm:h-8 sm:w-auto sm:px-3"
           >
-            <UserPlus className="h-4 w-4" /> Share
+            <UserPlus className="h-4 w-4" /> <span className="hidden sm:inline">Share</span>
           </Button>
         )}
-        <Button variant="secondary" size="sm" onClick={doSave} className="min-w-[92px]" disabled={saveState === "saving"}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={doSave}
+          className="h-9 w-9 px-0 sm:h-8 sm:w-auto sm:min-w-[92px] sm:px-3"
+          disabled={saveState === "saving"}
+          title="Save"
+        >
           {saveState === "saving" ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" /> Saving
+              <Loader2 className="h-4 w-4 animate-spin" /> <span className="hidden sm:inline">Saving</span>
             </>
           ) : saveState === "saved" ? (
             <>
-              <Check className="h-4 w-4 text-[var(--color-positive)]" /> Saved
+              <Check className="h-4 w-4 text-[var(--color-positive)]" /> <span className="hidden sm:inline">Saved</span>
             </>
           ) : saveState === "error" ? (
             <>
-              <TriangleAlert className="h-4 w-4 text-[var(--color-danger)]" /> Retry
+              <TriangleAlert className="h-4 w-4 text-[var(--color-danger)]" /> <span className="hidden sm:inline">Retry</span>
             </>
           ) : (
             <>
-              <Save className="h-4 w-4" /> Save
+              <Save className="h-4 w-4" /> <span className="hidden sm:inline">Save</span>
             </>
           )}
         </Button>
-        <Button variant="primary" size="sm" onClick={exportLrc}>
-          <Download className="h-4 w-4" /> Export .lrc
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={exportLrc}
+          title="Export .lrc"
+          className="h-9 w-9 px-0 sm:h-8 sm:w-auto sm:px-3"
+        >
+          <Download className="h-4 w-4" /> <span className="hidden sm:inline">Export .lrc</span>
         </Button>
         <Menu
           trigger={
-            <span className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] text-[var(--color-ink-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] text-[var(--color-ink-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)] sm:h-8 sm:w-8">
               <MoreHorizontal className="h-4 w-4" />
             </span>
           }
@@ -271,6 +301,37 @@ export function Header() {
           }
         }}
       />
+
+      <Modal
+        open={leaveOpen}
+        onClose={() => (leaving ? undefined : setLeaveOpen(false))}
+        title="Leave editor?"
+        description={
+          cloudEnabled
+            ? "Save your changes to the cloud before heading back, or discard them."
+            : "Save your changes before heading back, or discard them."
+        }
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setLeaveOpen(false)} disabled={leaving}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={discardAndLeave} disabled={leaving}>
+              Discard
+            </Button>
+            <Button variant="primary" onClick={saveAndLeave} disabled={leaving}>
+              {leaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              Save &amp; leave
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-[var(--color-ink-muted)]">
+          {cloudEnabled
+            ? "“Save & leave” syncs this project to the cloud so it stays up to date on your other devices and for collaborators."
+            : "Your work is kept on this device automatically."}
+        </p>
+      </Modal>
 
       <ShiftTimingDialog open={shiftOpen} onClose={() => setShiftOpen(false)} />
       <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />

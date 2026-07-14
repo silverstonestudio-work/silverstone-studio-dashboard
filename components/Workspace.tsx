@@ -20,7 +20,7 @@ export function Workspace() {
     <div className="flex h-dvh flex-col overflow-hidden">
       <Header />
 
-      <main className="flex min-h-0 flex-1 flex-col gap-3 p-3">
+      <main className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3 lg:overflow-hidden">
         {/* Audio transport + waveform (the recorder manages its own audio) */}
         {view !== "record" && (
           <section className="shrink-0 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-3">
@@ -39,7 +39,7 @@ export function Workspace() {
             <div className="shrink-0">
               <SyncBar />
             </div>
-            <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-[1fr_360px]">
+            <div className="grid grid-cols-1 gap-3 lg:min-h-0 lg:flex-1 lg:grid-cols-[1fr_360px]">
               <LyricsPanel />
               <div className="hidden min-h-0 lg:block">
                 <Inspector />

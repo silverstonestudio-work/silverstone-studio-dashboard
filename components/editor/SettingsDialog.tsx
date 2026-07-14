@@ -3,7 +3,6 @@
 import { useStore } from "@/lib/store";
 import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
-import { cn } from "@/lib/cn";
 
 export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const title = useStore((s) => s.project?.title ?? "");
@@ -72,19 +71,42 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
             </span>
           </span>
           <button
+            type="button"
             role="switch"
             aria-checked={settings.wordWipe}
-            onClick={() => updateSettings({ wordWipe: !settings.wordWipe })}
-            className={cn(
-              "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-              settings.wordWipe ? "bg-[var(--color-accent)]" : "bg-[var(--color-line-strong)]"
-            )}
+            aria-label="Word-level wipe"
+            onClick={(e) => {
+              updateSettings({ wordWipe: !settings.wordWipe });
+              e.currentTarget.blur();
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexShrink: 0,
+              height: 24,
+              width: 44,
+              padding: 2,
+              border: "none",
+              borderRadius: 9999,
+              cursor: "pointer",
+              outline: "none",
+              boxShadow: "none",
+              backgroundColor: settings.wordWipe
+                ? "var(--color-accent)"
+                : "var(--color-line-strong)",
+              transition: "background-color 0.2s",
+            }}
           >
             <span
-              className={cn(
-                "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
-                settings.wordWipe ? "translate-x-[22px]" : "translate-x-0.5"
-              )}
+              style={{
+                height: 20,
+                width: 20,
+                borderRadius: 9999,
+                background: "#ffffff",
+                boxShadow: "var(--shadow-sm)",
+                transform: settings.wordWipe ? "translateX(20px)" : "translateX(0)",
+                transition: "transform 0.2s",
+              }}
             />
           </button>
         </label>

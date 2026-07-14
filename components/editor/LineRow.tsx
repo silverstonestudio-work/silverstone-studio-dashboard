@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useState } from "react";
-import { Crosshair, Flag, Play } from "lucide-react";
+import { Crosshair, Flag, Pencil, Play } from "lucide-react";
 import type { Line } from "@/lib/types";
 import { countTimedWords, effectiveEnd, effectiveStart, lineDuration, lineText } from "@/lib/model";
 import { useStore } from "@/lib/store";
@@ -112,8 +112,17 @@ function LineRowInner({ line, index, isActive, isSelected, isSyncTarget }: LineR
         </div>
       </div>
 
-      {/* quick actions */}
-      <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+      {/* quick actions — always visible on touch; hover-reveal on desktop */}
+      <div className="flex shrink-0 items-center gap-0.5 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100">
+        <QuickBtn
+          label="Edit line text"
+          onClick={() => {
+            setDraft(lineText(line));
+            setEditing(true);
+          }}
+        >
+          <Pencil className="h-4 w-4" />
+        </QuickBtn>
         <QuickBtn label="Set in-point to playhead" onClick={() => stampLineStart(line.id)}>
           <Crosshair className="h-4 w-4" />
         </QuickBtn>

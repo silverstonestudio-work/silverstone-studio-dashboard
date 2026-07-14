@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut, Mic2, Wrench } from "lucide-react";
+import { LayoutDashboard, LogOut, Mic2, Wrench, X } from "lucide-react";
 import { useAuth } from "../auth/AuthProvider";
 import { Logo } from "../brand/Logo";
 import { cn } from "@/lib/cn";
@@ -29,17 +29,47 @@ const TOOLS: ToolLink[] = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar({
+  open = false,
+  onClose,
+}: {
+  open?: boolean;
+  onClose?: () => void;
+} = {}) {
   const pathname = usePathname();
   const { cloudEnabled, email, signOut } = useAuth();
 
   return (
-    <aside className="flex h-dvh w-[264px] shrink-0 flex-col border-r border-[var(--color-line)] bg-[var(--color-surface)]">
+    <>
+      {/* Backdrop — mobile only, behind the drawer. */}
+      <div
+        aria-hidden
+        onClick={onClose}
+        className={cn(
+          "fixed inset-0 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        )}
+      />
+
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex h-dvh w-[280px] max-w-[85vw] shrink-0 flex-col border-r border-[var(--color-line)] bg-[var(--color-surface)] transition-transform duration-300 ease-[var(--ease-out-soft)]",
+          "lg:static lg:z-auto lg:w-[264px] lg:max-w-none lg:translate-x-0 lg:transition-none",
+          open ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
       {/* brand */}
-      <div className="flex h-16 items-center border-b border-[var(--color-line)] px-4">
-        <Link href="/" aria-label="SilverStone Studio home">
+      <div className="flex h-16 items-center gap-2 border-b border-[var(--color-line)] px-4">
+        <Link href="/" onClick={onClose} className="min-w-0 flex-1" aria-label="SilverStone Studio home">
           <Logo />
         </Link>
+        <button
+          onClick={onClose}
+          aria-label="Close menu"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-ink-muted)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-ink)] lg:hidden"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
@@ -49,6 +79,7 @@ export function Sidebar() {
           active={pathname === "/"}
           icon={<LayoutDashboard className="h-4 w-4" />}
           label="Overview"
+          onClick={onClose}
         />
 
         {/* Tools */}
@@ -59,6 +90,7 @@ export function Sidebar() {
             <Link
               key={t.href}
               href={t.href}
+              onClick={onClose}
               className={cn(
                 "group mb-1 block rounded-[var(--radius-md)] border px-3 py-2.5 transition-colors",
                 active
@@ -101,7 +133,8 @@ export function Sidebar() {
           </div>
         </div>
       )}
-    </aside>
+      </aside>
+    </>
   );
 }
 
@@ -119,15 +152,18 @@ function NavItem({
   active,
   icon,
   label,
+  onClick,
 }: {
   href: string;
   active: boolean;
   icon: React.ReactNode;
   label: string;
+  onClick?: () => void;
 }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         "mb-1 flex items-center gap-2.5 rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium transition-colors",
         active
